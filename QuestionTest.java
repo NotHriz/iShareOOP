@@ -48,11 +48,15 @@ public class QuestionTest {
     // View all questions
     private static void viewQuestions() {
         System.out.println("\n--- All Questions ---");
-        List<String> questions = questionManager.getQuestions();
+        List<Question> questions = questionManager.getAllQuestions();
+        if (questions == null || questions.isEmpty()) {
+            System.out.println("No questions available.");
+            return;
+        }
         if (questions.isEmpty()) {
             System.out.println("No questions available.");
         } else {
-            for (String question : questions) {
+            for (Question question : questions) {
                 System.out.println(question);
             }
         }

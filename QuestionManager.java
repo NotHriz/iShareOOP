@@ -105,12 +105,8 @@ public class QuestionManager {
     }
 
     // Get a list of all questions (texts only)
-    public List<String> getQuestions() {
-        List<String> questionTexts = new ArrayList<>();
-        for (Question question : questions) {
-            questionTexts.add(question.getText());
-        }
-        return questionTexts;
+    public List<Question> getQuestions() {
+        return questions;
     }
 
     // Get a list of all users
@@ -122,4 +118,9 @@ public class QuestionManager {
     public int getNextId() {
         return nextId;
     }
+
+    public List<Question> getAllQuestions() {
+        return questions;
+    }
+    
 }

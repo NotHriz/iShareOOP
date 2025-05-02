@@ -25,6 +25,10 @@ public class User {
         return username;
     }
 
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
+    }
+
     // other getters and setters...
     public String getEmail() {
         return email;
