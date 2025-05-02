@@ -1,5 +1,4 @@
 import java.util.*;
-import java.io.*;
 
 public class QuestionTest {
     private static Scanner scanner = new Scanner(System.in);
