@@ -1,3 +1,0 @@
-3|Why is OOP?|1746160391664|bob,bob@gmail.com
-4|When is OOP?|1746197457149|Mukhriz,mukhriz@gmail.com
-5|How is OOP?|1746198292646|Mukhriz,mukhriz@gmail.com
