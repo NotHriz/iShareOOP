@@ -61,6 +61,7 @@ public class QuestionsPage {
             // Create a new Question object and add it to the service
             Question newQuestion = new Question(title, body, currentUser.getUsername());
             questionService.addQuestion(newQuestion);
+            refreshQuestions();
 
             titleField.clear();
             bodyArea.clear();
@@ -76,7 +77,7 @@ public class QuestionsPage {
             if (event.getClickCount() == 2) {  // double-click
                 Question selected = questionListView.getSelectionModel().getSelectedItem();
             if (selected != null) {
-                // TODO: Handle question selection (e.g., show details, allow editing)
+                // TODO: DO something
             }
         }
     });
@@ -96,8 +97,13 @@ public class QuestionsPage {
     }
 
     private void refreshQuestions() {
+        System.out.println("Refreshing questions. Total: " + questionService.getAllQuestions().size());
+        for (Question q : questionService.getAllQuestions()) {
+            System.out.println(q);
+        }
         questionListView.getItems().setAll(questionService.getAllQuestions());
     }
+
 
 
     public Parent getView() {

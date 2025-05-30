@@ -6,27 +6,51 @@ import javafx.stage.Stage;
 import model.User;
 import services.QuestionService;
 import pages.QuestionsPage;
+import javafx.scene.Parent;
+import pages.LoginPage;
+import pages.QuestionsPage;
+import services.*;
 
 public class Main extends Application {
 
     private Stage primaryStage;  // Save reference so you can change pages later
     private QuestionService questionService = new QuestionService();
+    private UserService userService = new UserService(); // Assuming you have a UserService to manage users
+    private User currentUser;
 
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        // Temporary hardcoded user for demo purposes
-        User loggedInUser = new User("Ali","password123");
-
-        // Load QuestionsPage
+        // Load Necessary Services
         questionService.loadQuestions();  // Load questions from file at startup
-        QuestionsPage questionsPage = new QuestionsPage(this, loggedInUser, questionService);
-        Scene scene = new Scene(questionsPage.getView(), 700, 500);
+        userService.loadUsers();  // Load users from file at startup
 
+        // Initialize the LoginPage
+        LoginPage loginPage = new LoginPage(this, userService, questionService); 
+        Parent root = loginPage.getView();
+        Scene scene = new Scene(root, 800, 600);
+
+        // Set the scene and show the primary stage
         primaryStage.setScene(scene);
         primaryStage.setTitle("Question Page");
         primaryStage.show();
+    }
+
+    // Method to change the current page
+    public void changePage(Parent newPage) {
+        Scene currentScene = primaryStage.getScene();
+        currentScene.setRoot(newPage);
+    }
+
+    public void showMainPage() {
+        QuestionsPage questionsPage = new QuestionsPage(this, currentUser, questionService);
+        changePage(questionsPage.getView());
+    }
+
+    // Method to set the current user
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     public static void main(String[] args) {
