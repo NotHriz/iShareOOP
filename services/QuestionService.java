@@ -21,38 +21,64 @@ public class QuestionService {
     }
 
     public void saveQuestions() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Question q : questions) {
-                writer.write(q.getTitle());
-                writer.newLine();
-                writer.write(q.getBody());
-                writer.newLine();
-                writer.write(q.getAuthor());
-                writer.newLine();
-                writer.write("---");
-                writer.newLine();
+        try {
+            File file = new File(FILE_NAME);
+            File parent = file.getParentFile();
+
+            if (parent != null && !parent.exists()) {
+                boolean dirsCreated = parent.mkdirs();  // Create directories if they don't exist
+                if (!dirsCreated) {
+                    System.out.println("Warning: Failed to create directories for " + parent.getAbsolutePath());
+                }
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                for (Question q : questions) {
+                    writer.write(q.getTitle());
+                    writer.newLine();
+                    writer.write(q.getBody());
+                    writer.newLine();
+                    writer.write(q.getAuthor());
+                    writer.newLine();
+                    writer.write(q.getId());
+                    writer.newLine();
+                    writer.write(q.getFormattedTimestamp());
+                    writer.newLine();
+                    writer.write("---");
+                    writer.newLine();
+                }
             }
         } catch (IOException e) {
             System.out.println("Error saving questions: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void loadQuestions() {
-        questions.clear(); // Clear any existing data
+        questions.clear();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String title, body, author, separator;
+            String title, body, author, id, createdAt;
+
             while ((title = reader.readLine()) != null) {
                 body = reader.readLine();
                 author = reader.readLine();
-                separator = reader.readLine(); // should be "---" indicating end of question
-                if (title != null && body != null && author != null && separator.equals("---")) {
-                    questions.add(new Question(title, body, author));
+                id = reader.readLine();
+                createdAt = reader.readLine();
+                reader.readLine(); // Skip the '---' separator
+
+                if (title != null && body != null && author != null && id != null && createdAt != null) {
+                    Question q = new Question(title, body, author, id, createdAt);
+                    questions.add(q);
+                } else {
+                    System.out.println("Skipping an incomplete question block.");
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("No saved file found.");
+
+            System.out.println("Questions loaded: " + questions.size());
+
         } catch (IOException e) {
-            System.out.println("Error loading questions: " + e.getMessage());
+            e.printStackTrace();
         }
-    }
+    }   
 }
