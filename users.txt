@@ -1,3 +1,0 @@
-alice|alice@example.com|password123
-bob|bob@example.com|password456
-Mukhriz|mukhriz@gmail.com|pass237
