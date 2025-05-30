@@ -30,25 +30,35 @@ public class QuestionsPage {
     private void buildUI() {
         Label titleLabel = new Label("Post a new Question");
 
+        // Create a TextField for the question title
         TextField titleField = new TextField();
         titleField.setPromptText("Title");
 
+        // Create a TextArea for the question body
         TextArea bodyArea = new TextArea();
         bodyArea.setPromptText("Write your question here...");
         bodyArea.setPrefRowCount(5);
 
+        // Create a Button to post the question
         Button postButton = new Button("Post Question");
         Label statusLabel = new Label();
 
+        // Create Button action to post the question
         postButton.setOnAction(e -> {
             String title = titleField.getText().trim();
             String body = bodyArea.getText().trim();
 
+            // Validate input
+            if (title.length() > 100) {
+                statusLabel.setText("Title cannot exceed 100 characters.");
+                return;
+            }
             if (title.isEmpty() || body.isEmpty()) {
                 statusLabel.setText("Title and body cannot be empty.");
                 return;
             }
 
+            // Create a new Question object and add it to the service
             Question newQuestion = new Question(title, body, currentUser.getUsername());
             questionService.addQuestion(newQuestion);
 
@@ -61,6 +71,15 @@ public class QuestionsPage {
         Label questionListLabel = new Label("All Questions:");
 
         questionListView.setPrefHeight(200);
+        // Add clickable functionality to the question list
+        questionListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {  // double-click
+                Question selected = questionListView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                // TODO: Handle question selection (e.g., show details, allow editing)
+            }
+        }
+    });
 
         layout = new VBox(10,
                 titleLabel,

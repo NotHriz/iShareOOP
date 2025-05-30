@@ -44,7 +44,7 @@ public class QuestionService {
             while ((title = reader.readLine()) != null) {
                 body = reader.readLine();
                 author = reader.readLine();
-                separator = reader.readLine(); // should be "---"
+                separator = reader.readLine(); // should be "---" indicating end of question
                 if (title != null && body != null && author != null && separator.equals("---")) {
                     questions.add(new Question(title, body, author));
                 }
