@@ -1,12 +1,17 @@
 package model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Question {
     private String title, body, author;
+    private LocalDateTime createdAt;
 
     public Question(String title, String body, String author) {
         this.title = title;
         this.body = body;
         this.author = author;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getTitle() {
@@ -35,8 +40,10 @@ public class Question {
 
     @Override
     public String toString() {
-        return title + "(by " + author + ")";
+        // format the date to a readable format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String createdAt = " (" + this.createdAt.format(formatter) + ")";
+        
+        return title + " " +"(by " + author + ")" + createdAt;
     }
-
-    
 }

@@ -9,7 +9,7 @@ import pages.QuestionsPage;
 
 public class Main extends Application {
 
-    private Stage primaryStage;  // Save reference so you can change pages later
+    private Stage primaryStage;  
     private QuestionService questionService = new QuestionService();
 
     @Override
