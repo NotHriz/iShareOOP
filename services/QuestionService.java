@@ -8,7 +8,7 @@ import java.util.List;
 
 public class QuestionService {
     private final List<Question> questions = new ArrayList<>();
-    private final String FILE_NAME = "questions.txt";
+    private final String FILE_NAME = "databases/questions.txt";
 
     public void addQuestion(Question q) {
         questions.add(q);
