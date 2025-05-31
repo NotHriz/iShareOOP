@@ -80,5 +80,14 @@ public class QuestionService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }   
+    } 
+    
+   public Question getCurrentQuestion(String id) {
+        for (Question q : questions) {
+            if (q.getId().equals(id)) {
+                return q;
+            }
+        }
+        return null; 
+    }
 }

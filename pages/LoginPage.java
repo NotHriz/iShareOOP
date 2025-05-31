@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import model.User;
+import services.AnswerService;
 import services.QuestionService;
 import services.UserService;
 import app.Main;
@@ -16,9 +17,11 @@ public class LoginPage {
     private final Main mainApp;
     private final UserService userService;
     private final QuestionService questionService;
+    private final AnswerService answerService;
 
     // Constructor to initialize the LoginPage
-    public LoginPage(Main mainApp, UserService userService, QuestionService questionService) {
+    public LoginPage(Main mainApp, UserService userService, QuestionService questionService, AnswerService answerService) {
+        this.answerService = answerService;
         this.mainApp = mainApp;
         this.userService = userService;
         this.questionService = questionService;
@@ -65,7 +68,7 @@ public class LoginPage {
                 if (user.isAdmin()) {
                     // mainApp.showAdminPage();
                 } else {
-                    QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService);
+                    QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
                     mainApp.changePage(questionsPage.getView());;
                 }
             } else {

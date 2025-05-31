@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Question;
 import model.User;
+import services.AnswerService;
 import services.QuestionService;
 import app.Main;
 
@@ -17,8 +18,10 @@ public class QuestionsPage {
     private final User currentUser;
     private final QuestionService questionService;
     private final ListView<Question> questionListView;
+    private final AnswerService answerService;
 
-    public QuestionsPage(Main mainApp, User user, QuestionService questionService) {
+    public QuestionsPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService) {
+        this.answerService = answerService;
         this.mainApp = mainApp;
         this.currentUser = user;
         this.questionService = questionService;
@@ -77,7 +80,9 @@ public class QuestionsPage {
             if (event.getClickCount() == 2) {  // double-click
                 Question selected = questionListView.getSelectionModel().getSelectedItem();
             if (selected != null) {
-                // TODO: DO something
+                // Pop up a new window to show question and answers
+                AnswerPage answerPage = new AnswerPage(mainApp, currentUser, questionService, answerService,selected.getId());
+                mainApp.popUpNewWindow(answerPage.getView());
             }
         }
     });
