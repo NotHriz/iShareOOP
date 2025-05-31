@@ -4,7 +4,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import model.User;
 import services.AnswerService;
 import services.QuestionService;
@@ -17,6 +22,7 @@ public class LoginPage {
     private final UserService userService;
     private final QuestionService questionService;
     private final AnswerService answerService;
+    private int loginAttempts = 0;
 
     public LoginPage(Main mainApp, UserService userService, QuestionService questionService, AnswerService answerService) {
         this.mainApp = mainApp;
@@ -27,47 +33,46 @@ public class LoginPage {
     }
 
     public void buildUI() {
-        layout = new VBox(20);
+        layout = new VBox(10);
         layout.setPadding(new Insets(40));
-        layout.setAlignment(Pos.CENTER);
+        layout.setAlignment(Pos.TOP_CENTER);
+        
+        Image logo = new Image("logo.jpg");
+        ImageView logoView = new ImageView(logo);
+        logoView.setFitWidth(200);  
+        logoView.setFitHeight(200);
+       
 
-        Label titleLabel = new Label("Login to Your Account");
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label subtitleLabel = new Label("your answer is here");
+        subtitleLabel.setTextFill(Color.GRAY);
+        subtitleLabel.setFont(Font.font("System", FontWeight.NORMAL, 14));
 
-        GridPane formGrid = new GridPane();
-        formGrid.setVgap(10);
-        formGrid.setHgap(10);
-        formGrid.setAlignment(Pos.CENTER);
-        formGrid.setPadding(new Insets(10));
+        VBox formBox = new VBox(10);
+        formBox.setAlignment(Pos.CENTER);
+        formBox.setMaxWidth(300);
 
-        Label usernameLabel = new Label("Username:");
         TextField usernameField = new TextField();
-        usernameField.setPromptText("Enter your username");
+        usernameField.setPromptText("Username");
+        usernameField.setMaxWidth(Double.MAX_VALUE);
 
-        Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Enter your password");
+        passwordField.setPromptText("Password");
+        passwordField.setMaxWidth(Double.MAX_VALUE);
 
         TextField visiblePasswordField = new TextField();
-        visiblePasswordField.setManaged(false);
+        visiblePasswordField.setPromptText("Password");
         visiblePasswordField.setVisible(false);
-        visiblePasswordField.setPromptText("Enter your password");
+        visiblePasswordField.setManaged(false);
+        visiblePasswordField.setMaxWidth(Double.MAX_VALUE);
 
         CheckBox showPasswordCheckBox = new CheckBox("Show Password");
         showPasswordCheckBox.setOnAction(e -> {
-            if (showPasswordCheckBox.isSelected()) {
-                visiblePasswordField.setText(passwordField.getText());
-                visiblePasswordField.setManaged(true);
-                visiblePasswordField.setVisible(true);
-                passwordField.setManaged(false);
-                passwordField.setVisible(false);
-            } else {
-                passwordField.setText(visiblePasswordField.getText());
-                passwordField.setManaged(true);
-                passwordField.setVisible(true);
-                visiblePasswordField.setManaged(false);
-                visiblePasswordField.setVisible(false);
-            }
+            boolean isSelected = showPasswordCheckBox.isSelected();
+            visiblePasswordField.setText(passwordField.getText());
+            visiblePasswordField.setVisible(isSelected);
+            visiblePasswordField.setManaged(isSelected);
+            passwordField.setVisible(!isSelected);
+            passwordField.setManaged(!isSelected);
         });
 
         passwordField.textProperty().addListener((obs, oldText, newText) -> {
@@ -82,68 +87,76 @@ public class LoginPage {
             }
         });
 
-        formGrid.add(usernameLabel, 0, 0);
-        formGrid.add(usernameField, 1, 0);
-        formGrid.add(passwordLabel, 0, 1);
-        formGrid.add(passwordField, 1, 1);
-        formGrid.add(visiblePasswordField, 1, 1);
-        formGrid.add(showPasswordCheckBox, 1, 2);
-
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
         Button loginButton = new Button("Login");
+        loginButton.setPrefWidth(100);
+        loginButton.setTextFill(Color.WHITE);  // White text
+        loginButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE,new CornerRadii(20), null)));
+
         Button registerButton = new Button("Register");
+        registerButton.setPrefWidth(100);
+        registerButton.setTextFill(Color.WHITE);  
+        registerButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE,new CornerRadii(20), null)));
+
+        Label forgotPasswordLabel = new Label("Forgot password?");
+        forgotPasswordLabel.setStyle("-fx-text-fill: blue; -fx-border-color: lightgray; -fx-padding: 5;");
+        forgotPasswordLabel.setVisible(false);
 
         loginButton.setOnAction(e -> {
             String username = usernameField.getText().trim();
-            String password = showPasswordCheckBox.isSelected()
-                    ? visiblePasswordField.getText().trim()
-                    : passwordField.getText().trim();
+            String password = showPasswordCheckBox.isSelected() ? visiblePasswordField.getText().trim() : passwordField.getText().trim();
 
             if (username.isEmpty() || password.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
-                alert.showAndWait();
+                showAlert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
                 return;
             }
 
             User user = userService.authenticate(username, password);
             if (user != null) {
+                loginAttempts = 0;
                 mainApp.setCurrentUser(user);
                 QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
                 mainApp.changePage(questionsPage.getView());
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid username or password.");
-                alert.showAndWait();
+                loginAttempts++;
+                showAlert(Alert.AlertType.ERROR, "Invalid username or password.");
+                if (loginAttempts >= 3) {
+                    forgotPasswordLabel.setVisible(true);
+                }
             }
         });
 
         registerButton.setOnAction(e -> {
-            String username = usernameField.getText().trim();
-            String password = showPasswordCheckBox.isSelected()
-                    ? visiblePasswordField.getText().trim()
-                    : passwordField.getText().trim();
-
-            if (username.isEmpty() || password.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
-                alert.showAndWait();
-                return;
-            }
-
-            if (userService.userExists(username)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "User already exists.");
-                alert.showAndWait();
-                return;
-            }
-
-            userService.addUser(username, password);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Registration successful! You can now log in.");
-            alert.showAndWait();
+            RegisterPage registerPage = new RegisterPage(mainApp, userService);
+            mainApp.changePage(registerPage.getView());
         });
 
         buttonBox.getChildren().addAll(loginButton, registerButton);
 
-        layout.getChildren().addAll(titleLabel, formGrid, buttonBox);
+        Label footer = new Label("iShare IT Tech Company");
+        footer.setTextFill(Color.GREY);
+        footer.setFont(Font.font("System", FontWeight.NORMAL, 14));
+        footer.setAlignment(Pos.BOTTOM_CENTER);
+
+        formBox.getChildren().addAll(
+            usernameField,
+            passwordField,
+            visiblePasswordField,
+            showPasswordCheckBox,
+            buttonBox,
+            forgotPasswordLabel
+        );
+
+        
+
+        layout.getChildren().addAll(logoView, subtitleLabel, formBox, footer);
+        layout.setAlignment(Pos.CENTER);
+    }
+
+    private void showAlert(Alert.AlertType type, String message) {
+        new Alert(type, message).showAndWait();
     }
 
     public Parent getView() {
