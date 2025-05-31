@@ -16,3 +16,9 @@ charlie
 f44d1a22-60c4-425d-bd9d-c237bc513c0f
 2025-05-31 04:24
 ---
+How to print helloWorld in python
+I dont know i wrote print(helloWorld)
+bob
+51a1950c-6af0-44fa-971e-a0e41a2ebc07
+2025-05-31 15:51
+---
