@@ -16,9 +16,9 @@ public class AnswerPage {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final ListView<Answer> answerListView;
-    private String questionId;
+    private final String questionId;
+    private ScrollPane scrollPane;
 
-    // Constructor to initialize the AnswerPage
     public AnswerPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService, String questionId) {
         this.mainApp = mainApp;
         this.currentUser = user;
@@ -26,36 +26,47 @@ public class AnswerPage {
         this.answerService = answerService;
         this.questionId = questionId;
         this.answerListView = new ListView<>();
-
         buildUI();
         refreshAnswers();
     }
 
-    // Build the UI for the answer page
     private void buildUI() {
-        layout = new VBox(10);
-        layout.setPadding(new Insets(20));
-        layout.setAlignment(Pos.CENTER);
+        layout = new VBox(20);
+        layout.setPadding(new Insets(30));
+        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setPrefWidth(600);
 
-        // Show the question title and body at the top
         Question currentQuestion = questionService.getCurrentQuestion(questionId);
-        if (currentQuestion != null) {
-            Label questionTitle = new Label("Question: " + currentQuestion.getTitle());
-            Label questionBody = new Label("Body: " + currentQuestion.getBody());
-            layout.getChildren().addAll(questionTitle, questionBody);
-        } else {
+
+        if (currentQuestion == null) {
             Label noQuestionLabel = new Label("No question selected.");
             layout.getChildren().add(noQuestionLabel);
-            return; // Exit if no question is available
+            scrollPane = new ScrollPane(layout);
+            scrollPane.setFitToWidth(true);
+            return;
         }
 
-        // Set up answer list view
+        Label titleLabel = new Label("Question:");
+        titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        Label questionTitle = new Label(currentQuestion.getTitle());
+        questionTitle.setWrapText(true);
+        questionTitle.setStyle("-fx-font-size: 14px;");
+
+        Label bodyLabel = new Label("Details:");
+        bodyLabel.setStyle("-fx-font-weight: bold;");
+        Label questionBody = new Label(currentQuestion.getBody());
+        questionBody.setWrapText(true);
+
+        VBox questionBox = new VBox(5, titleLabel, questionTitle, bodyLabel, questionBody);
+        questionBox.setPadding(new Insets(10));
+        questionBox.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
+        questionBox.setMaxWidth(500);
+
         answerListView.setPrefHeight(200);
-        answerListView.setPrefWidth(400);
+        answerListView.setPrefWidth(500);
         answerListView.setPlaceholder(new Label("No answers yet. Be the first to answer!"));
 
-        // Display each answer nicely
-        answerListView.setCellFactory(param -> new ListCell<Answer>() {
+        answerListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Answer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -67,7 +78,6 @@ public class AnswerPage {
             }
         });
 
-        // Triple-click to remove an answer (admin only)
         answerListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 3 && currentUser.isAdmin()) {
                 Answer selected = answerListView.getSelectionModel().getSelectedItem();
@@ -78,17 +88,19 @@ public class AnswerPage {
             }
         });
 
-        Label titleLabel = new Label("Post an Answer");
+        Label postAnswerLabel = new Label("Post an Answer");
+        postAnswerLabel.setStyle("-fx-font-weight: bold;");
 
-        TextArea bodyArea = new TextArea();
-        bodyArea.setPromptText("Write your answer here...");
-        bodyArea.setPrefRowCount(5);
+        TextArea answerArea = new TextArea();
+        answerArea.setPromptText("Write your answer here...");
+        answerArea.setPrefRowCount(5);
+        answerArea.setWrapText(true);
 
         Button postButton = new Button("Post Answer");
         Label statusLabel = new Label();
 
         postButton.setOnAction(e -> {
-            String body = bodyArea.getText().trim();
+            String body = answerArea.getText().trim();
             if (body.isEmpty()) {
                 statusLabel.setText("Answer cannot be empty.");
                 return;
@@ -97,31 +109,39 @@ public class AnswerPage {
             Answer answer = new Answer(questionId, body, currentUser.getUsername());
             answerService.addAnswer(answer);
             refreshAnswers();
-            bodyArea.clear();
+            answerArea.clear();
             statusLabel.setText("Answer posted successfully.");
         });
 
-        // Admin button to remove the whole question and all answers
+        VBox postAnswerBox = new VBox(10, postAnswerLabel, answerArea, postButton, statusLabel);
+        postAnswerBox.setPadding(new Insets(10));
+        postAnswerBox.setStyle("-fx-background-color: #f0f4ff; -fx-border-color: #ccddee; -fx-border-radius: 5; -fx-background-radius: 5;");
+        postAnswerBox.setMaxWidth(500);
+
         if (currentUser.isAdmin()) {
-            Button removeButton = new Button("Remove Question");
-            removeButton.setOnAction(e -> {
+            Button removeQuestionButton = new Button("Remove Question");
+            removeQuestionButton.setStyle("-fx-background-color: #ffdddd;");
+            removeQuestionButton.setOnAction(e -> {
                 questionService.removeQuestion(questionId);
                 answerService.removeAnswersByQuestionId(questionId);
                 mainApp.changePage(new QuestionsPage(mainApp, currentUser, questionService, answerService).getView());
             });
-            layout.getChildren().add(removeButton);
+            layout.getChildren().add(removeQuestionButton);
         }
 
-        layout.getChildren().addAll(titleLabel, bodyArea, postButton, statusLabel, answerListView);
+        layout.getChildren().addAll(questionBox, new Label("Answers:"), answerListView, postAnswerBox);
+
+        scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPadding(new Insets(10));
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
     }
 
-    // Refresh the answer list
     public void refreshAnswers() {
-        answerListView.getItems().clear();
-        answerListView.getItems().addAll(answerService.getAnswersByQuestionId(questionId));
+        answerListView.getItems().setAll(answerService.getAnswersByQuestionId(questionId));
     }
 
     public Parent getView() {
-        return layout;
+        return scrollPane;
     }
 }

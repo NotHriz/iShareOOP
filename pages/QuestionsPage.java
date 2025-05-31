@@ -30,33 +30,46 @@ public class QuestionsPage {
     }
 
     private void buildUI() {
-        layout = new VBox(10);
+        layout = new VBox(20);
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.TOP_CENTER);
 
-        // 🔹 Welcome message and logout button
+        // Top bar: Welcome + Logout
         Label welcomeLabel = new Label("Welcome, " + currentUser.getUsername() + "!");
+        welcomeLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
         Button logoutButton = new Button("Logout");
         logoutButton.setOnAction(e -> {
             mainApp.changePage(new LoginPage(mainApp, mainApp.getUserService(), questionService, answerService).getView());
         });
 
-        HBox topBar = new HBox(10, welcomeLabel, logoutButton);
-        topBar.setAlignment(Pos.CENTER_RIGHT);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox topBar = new HBox(10, welcomeLabel, spacer, logoutButton);
+        topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.setPadding(new Insets(0, 0, 10, 0));
 
-        // 🔹 Form to post a question
-        Label titleLabel = new Label("Post a new Question");
+        // Post question form
+        TitledPane postSection = new TitledPane();
+        postSection.setText("Post a New Question");
+        postSection.setCollapsible(false);
+
+        VBox formBox = new VBox(10);
+        formBox.setAlignment(Pos.CENTER_LEFT);
+        formBox.setPadding(new Insets(10));
 
         TextField titleField = new TextField();
         titleField.setPromptText("Title");
+        titleField.setMaxWidth(400);
 
         TextArea bodyArea = new TextArea();
         bodyArea.setPromptText("Write your question here...");
-        bodyArea.setPrefRowCount(5);
+        bodyArea.setPrefRowCount(4);
+        bodyArea.setMaxWidth(400);
 
         Button postButton = new Button("Post Question");
         Label statusLabel = new Label();
+        statusLabel.setStyle("-fx-text-fill: green;");
 
         postButton.setOnAction(e -> {
             String title = titleField.getText().trim();
@@ -64,10 +77,12 @@ public class QuestionsPage {
 
             if (title.length() > 100) {
                 statusLabel.setText("Title cannot exceed 100 characters.");
+                statusLabel.setStyle("-fx-text-fill: red;");
                 return;
             }
             if (title.isEmpty() || body.isEmpty()) {
                 statusLabel.setText("Title and body cannot be empty.");
+                statusLabel.setStyle("-fx-text-fill: red;");
                 return;
             }
 
@@ -78,11 +93,19 @@ public class QuestionsPage {
             titleField.clear();
             bodyArea.clear();
             statusLabel.setText("Question posted!");
+            statusLabel.setStyle("-fx-text-fill: green;");
         });
 
+        formBox.getChildren().addAll(titleField, bodyArea, postButton, statusLabel);
+        postSection.setContent(formBox);
+
+        // Question list
         Label questionListLabel = new Label("All Questions:");
+        questionListLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
 
         questionListView.setPrefHeight(200);
+        questionListView.setMaxWidth(600);
+        questionListView.setPlaceholder(new Label("No questions posted yet."));
         questionListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Question selected = questionListView.getSelectionModel().getSelectedItem();
@@ -95,11 +118,7 @@ public class QuestionsPage {
 
         layout.getChildren().addAll(
                 topBar,
-                titleLabel,
-                titleField,
-                bodyArea,
-                postButton,
-                statusLabel,
+                postSection,
                 new Separator(),
                 questionListLabel,
                 questionListView

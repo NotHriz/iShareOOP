@@ -5,7 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
 import model.User;
 import services.AnswerService;
 import services.QuestionService;
@@ -28,11 +27,18 @@ public class LoginPage {
     }
 
     public void buildUI() {
-        layout = new VBox(10);
-        layout.setPadding(new Insets(20));
+        layout = new VBox(20);
+        layout.setPadding(new Insets(40));
         layout.setAlignment(Pos.CENTER);
 
         Label titleLabel = new Label("Login to Your Account");
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        GridPane formGrid = new GridPane();
+        formGrid.setVgap(10);
+        formGrid.setHgap(10);
+        formGrid.setAlignment(Pos.CENTER);
+        formGrid.setPadding(new Insets(10));
 
         Label usernameLabel = new Label("Username:");
         TextField usernameField = new TextField();
@@ -42,13 +48,11 @@ public class LoginPage {
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter your password");
 
-        // Visible password field for show/hide
         TextField visiblePasswordField = new TextField();
         visiblePasswordField.setManaged(false);
         visiblePasswordField.setVisible(false);
         visiblePasswordField.setPromptText("Enter your password");
 
-        // Checkbox to show password
         CheckBox showPasswordCheckBox = new CheckBox("Show Password");
         showPasswordCheckBox.setOnAction(e -> {
             if (showPasswordCheckBox.isSelected()) {
@@ -66,22 +70,36 @@ public class LoginPage {
             }
         });
 
-        // Keep both password fields in sync
         passwordField.textProperty().addListener((obs, oldText, newText) -> {
             if (!showPasswordCheckBox.isSelected()) {
                 visiblePasswordField.setText(newText);
             }
         });
+
         visiblePasswordField.textProperty().addListener((obs, oldText, newText) -> {
             if (showPasswordCheckBox.isSelected()) {
                 passwordField.setText(newText);
             }
         });
 
+        formGrid.add(usernameLabel, 0, 0);
+        formGrid.add(usernameField, 1, 0);
+        formGrid.add(passwordLabel, 0, 1);
+        formGrid.add(passwordField, 1, 1);
+        formGrid.add(visiblePasswordField, 1, 1);
+        formGrid.add(showPasswordCheckBox, 1, 2);
+
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+
         Button loginButton = new Button("Login");
+        Button registerButton = new Button("Register");
+
         loginButton.setOnAction(e -> {
             String username = usernameField.getText().trim();
-            String password = showPasswordCheckBox.isSelected() ? visiblePasswordField.getText().trim() : passwordField.getText().trim();
+            String password = showPasswordCheckBox.isSelected()
+                    ? visiblePasswordField.getText().trim()
+                    : passwordField.getText().trim();
 
             if (username.isEmpty() || password.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
@@ -100,10 +118,11 @@ public class LoginPage {
             }
         });
 
-        Button registerButton = new Button("Register");
         registerButton.setOnAction(e -> {
             String username = usernameField.getText().trim();
-            String password = showPasswordCheckBox.isSelected() ? visiblePasswordField.getText().trim() : passwordField.getText().trim();
+            String password = showPasswordCheckBox.isSelected()
+                    ? visiblePasswordField.getText().trim()
+                    : passwordField.getText().trim();
 
             if (username.isEmpty() || password.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
@@ -122,15 +141,9 @@ public class LoginPage {
             alert.showAndWait();
         });
 
-        layout.getChildren().addAll(
-                titleLabel,
-                usernameLabel, usernameField,
-                passwordLabel, passwordField,
-                visiblePasswordField,
-                showPasswordCheckBox,
-                loginButton,
-                registerButton
-        );
+        buttonBox.getChildren().addAll(loginButton, registerButton);
+
+        layout.getChildren().addAll(titleLabel, formGrid, buttonBox);
     }
 
     public Parent getView() {
