@@ -67,5 +67,16 @@ public class UserService {
         return null; // Authentication failed
     }
 
+    // Check if a username already exists
+    public boolean userExists(String username) {
+        for (User user : users) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
 }

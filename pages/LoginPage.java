@@ -11,7 +11,7 @@ import services.AnswerService;
 import services.QuestionService;
 import services.UserService;
 import app.Main;
-import pages.QuestionsPage;
+
 public class LoginPage {
     private VBox layout;
     private final Main mainApp;
@@ -19,70 +19,121 @@ public class LoginPage {
     private final QuestionService questionService;
     private final AnswerService answerService;
 
-    // Constructor to initialize the LoginPage
     public LoginPage(Main mainApp, UserService userService, QuestionService questionService, AnswerService answerService) {
-        this.answerService = answerService;
         this.mainApp = mainApp;
         this.userService = userService;
         this.questionService = questionService;
+        this.answerService = answerService;
         buildUI();
     }
 
-    // Build the UI for the login page
     public void buildUI() {
         layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.CENTER);
-        
+
         Label titleLabel = new Label("Login to Your Account");
-        
-        // Create a TextField for the username
+
         Label usernameLabel = new Label("Username:");
         TextField usernameField = new TextField();
         usernameField.setPromptText("Enter your username");
 
-        // Create a PasswordField for the password
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter your password");
 
-        // Create a Button to submit the Login
+        // Visible password field for show/hide
+        TextField visiblePasswordField = new TextField();
+        visiblePasswordField.setManaged(false);
+        visiblePasswordField.setVisible(false);
+        visiblePasswordField.setPromptText("Enter your password");
+
+        // Checkbox to show password
+        CheckBox showPasswordCheckBox = new CheckBox("Show Password");
+        showPasswordCheckBox.setOnAction(e -> {
+            if (showPasswordCheckBox.isSelected()) {
+                visiblePasswordField.setText(passwordField.getText());
+                visiblePasswordField.setManaged(true);
+                visiblePasswordField.setVisible(true);
+                passwordField.setManaged(false);
+                passwordField.setVisible(false);
+            } else {
+                passwordField.setText(visiblePasswordField.getText());
+                passwordField.setManaged(true);
+                passwordField.setVisible(true);
+                visiblePasswordField.setManaged(false);
+                visiblePasswordField.setVisible(false);
+            }
+        });
+
+        // Keep both password fields in sync
+        passwordField.textProperty().addListener((obs, oldText, newText) -> {
+            if (!showPasswordCheckBox.isSelected()) {
+                visiblePasswordField.setText(newText);
+            }
+        });
+        visiblePasswordField.textProperty().addListener((obs, oldText, newText) -> {
+            if (showPasswordCheckBox.isSelected()) {
+                passwordField.setText(newText);
+            }
+        });
+
         Button loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
             String username = usernameField.getText().trim();
-            String password = passwordField.getText().trim();
+            String password = showPasswordCheckBox.isSelected() ? visiblePasswordField.getText().trim() : passwordField.getText().trim();
 
-            // Validate input (check if fields are not null)
             if (username.isEmpty() || password.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
                 alert.showAndWait();
                 return;
             }
 
-            // Authenticate the user
             User user = userService.authenticate(username, password);
             if (user != null) {
                 mainApp.setCurrentUser(user);
-
                 QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
-                mainApp.changePage(questionsPage.getView());;
+                mainApp.changePage(questionsPage.getView());
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid username or password.");
                 alert.showAndWait();
             }
         });
 
+        Button registerButton = new Button("Register");
+        registerButton.setOnAction(e -> {
+            String username = usernameField.getText().trim();
+            String password = showPasswordCheckBox.isSelected() ? visiblePasswordField.getText().trim() : passwordField.getText().trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Username and password cannot be empty.");
+                alert.showAndWait();
+                return;
+            }
+
+            if (userService.userExists(username)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "User already exists.");
+                alert.showAndWait();
+                return;
+            }
+
+            userService.addUser(username, password);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Registration successful! You can now log in.");
+            alert.showAndWait();
+        });
+
         layout.getChildren().addAll(
-            titleLabel,
-            usernameLabel, usernameField,
-            passwordLabel, passwordField,
-            loginButton
+                titleLabel,
+                usernameLabel, usernameField,
+                passwordLabel, passwordField,
+                visiblePasswordField,
+                showPasswordCheckBox,
+                loginButton,
+                registerButton
         );
     }
 
     public Parent getView() {
         return layout;
     }
-
-
 }
