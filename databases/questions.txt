@@ -1,3 +1,9 @@
+What is polymorphism in OOP?
+Can someone explain what polymorphism is and how it's used in Java?
+charlie
+bcf7e64c-391e-4aa0-8a23-279e4eadb799
+2025-05-31 04:24
+---
 What is the difference between an interface and an abstract class?
 I'm confused when to use an interface and when to use an abstract class in Java.
 charlie
