@@ -15,7 +15,7 @@ public class AnswerPage {
     private final User currentUser;
     private final QuestionService questionService;
     private final AnswerService answerService;
-    private final ListView<String> answerListView;
+    private final ListView<Answer> answerListView;
     private String questionId;
 
     // Constructor to initialize the AnswerPage
@@ -26,7 +26,7 @@ public class AnswerPage {
         this.answerService = answerService;
         this.questionId = questionId;
         this.answerListView = new ListView<>();
-        
+
         buildUI();
         refreshAnswers();
     }
@@ -36,7 +36,7 @@ public class AnswerPage {
         layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.CENTER);
-        
+
         // Show the question title and body at the top
         Question currentQuestion = questionService.getCurrentQuestion(questionId);
         if (currentQuestion != null) {
@@ -49,45 +49,51 @@ public class AnswerPage {
             return; // Exit if no question is available
         }
 
-        // Create a ListView to display other answers
+        // Set up answer list view
         answerListView.setPrefHeight(200);
         answerListView.setPrefWidth(400);
-        refreshAnswers();
         answerListView.setPlaceholder(new Label("No answers yet. Be the first to answer!"));
-        answerListView.setCellFactory(param -> new ListCell<String>() {
+
+        // Display each answer nicely
+        answerListView.setCellFactory(param -> new ListCell<Answer>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(Answer item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item);
+                    setText("Answer by " + item.getAuthor() + ": " + item.getBody());
+                }
+            }
+        });
+
+        // Triple-click to remove an answer (admin only)
+        answerListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 3 && currentUser.isAdmin()) {
+                Answer selected = answerListView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    answerService.removeAnswerById(selected.getId());
+                    refreshAnswers();
                 }
             }
         });
 
         Label titleLabel = new Label("Post an Answer");
 
-        // Create a TextArea for the answer body
         TextArea bodyArea = new TextArea();
         bodyArea.setPromptText("Write your answer here...");
         bodyArea.setPrefRowCount(5);
 
-        // Create a Button to post the answer
         Button postButton = new Button("Post Answer");
         Label statusLabel = new Label();
 
-        // Create Button action to post the answer
         postButton.setOnAction(e -> {
             String body = bodyArea.getText().trim();
-
-            // Validate input
             if (body.isEmpty()) {
                 statusLabel.setText("Answer cannot be empty.");
                 return;
             }
 
-            // Create and add the answer
             Answer answer = new Answer(questionId, body, currentUser.getUsername());
             answerService.addAnswer(answer);
             refreshAnswers();
@@ -95,7 +101,7 @@ public class AnswerPage {
             statusLabel.setText("Answer posted successfully.");
         });
 
-        // Create extra button to remove the whole question and all its answers for admins
+        // Admin button to remove the whole question and all answers
         if (currentUser.isAdmin()) {
             Button removeButton = new Button("Remove Question");
             removeButton.setOnAction(e -> {
@@ -106,33 +112,16 @@ public class AnswerPage {
             layout.getChildren().add(removeButton);
         }
 
-        // Remove specific answer when admin triple-clicks on it
-        answerListView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 3 && currentUser.isAdmin()) {
-                String selectedAnswer = answerListView.getSelectionModel().getSelectedItem();
-                if (selectedAnswer != null) {
-                    String answerId = selectedAnswer.split(":")[0].trim(); // Assuming the format is "Answer by Author: Body"
-                    answerService.removeAnswerById(answerId);
-                    refreshAnswers();
-                }
-            }
-        });
-
-        // Add components to the layout
         layout.getChildren().addAll(titleLabel, bodyArea, postButton, statusLabel, answerListView);
     }
 
+    // Refresh the answer list
     public void refreshAnswers() {
         answerListView.getItems().clear();
-        for (Answer answer : answerService.getAnswersByQuestionId(questionId)) {
-            String answerText = "Answer by " + answer.getAuthor() + ": " + answer.getBody();
-            answerListView.getItems().add(answerText);
-        }
+        answerListView.getItems().addAll(answerService.getAnswersByQuestionId(questionId));
     }
 
     public Parent getView() {
         return layout;
     }
-
-    
 }
