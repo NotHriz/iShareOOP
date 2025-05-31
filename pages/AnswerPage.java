@@ -5,6 +5,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import model.*;
 import services.*;
 import app.Main;
@@ -59,12 +63,12 @@ public class AnswerPage {
 
         VBox questionBox = new VBox(5, titleLabel, questionTitle, bodyLabel, questionBody);
         questionBox.setPadding(new Insets(10));
-        questionBox.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
+        questionBox.setStyle("-fx-background-color: rgb(175, 214, 253); -fx-border-color: #ddd; -fx-border-radius: 15; -fx-background-radius: 15;");
         questionBox.setMaxWidth(500);
-
         answerListView.setPrefHeight(200);
         answerListView.setPrefWidth(500);
         answerListView.setPlaceholder(new Label("No answers yet. Be the first to answer!"));
+        answerListView.setStyle("-fx-background-color:rgb(191, 121, 252); -fx-border-radius: 15; -fx-background-radius: 15;");
 
         answerListView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -73,11 +77,12 @@ public class AnswerPage {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText("Answer by " + item.getAuthor() + ": " + item.getBody());
+                    setText("Answer by @" + item.getAuthor() + ": " + item.getBody());
                 }
             }
         });
 
+        
         answerListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 3 && currentUser.isAdmin()) {
                 Answer selected = answerListView.getSelectionModel().getSelectedItem();
@@ -88,7 +93,7 @@ public class AnswerPage {
             }
         });
 
-        Label postAnswerLabel = new Label("Post an Answer");
+        Label postAnswerLabel = new Label("Post Answers");
         postAnswerLabel.setStyle("-fx-font-weight: bold;");
 
         TextArea answerArea = new TextArea();
@@ -97,6 +102,9 @@ public class AnswerPage {
         answerArea.setWrapText(true);
 
         Button postButton = new Button("Post Answer");
+        postButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        postButton.setTextFill(Color.WHITE);
+        postButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE, new CornerRadii(15), Insets.EMPTY)));
         Label statusLabel = new Label();
 
         postButton.setOnAction(e -> {
@@ -112,24 +120,59 @@ public class AnswerPage {
             answerArea.clear();
             statusLabel.setText("Answer posted successfully.");
         });
-
+        
         VBox postAnswerBox = new VBox(10, postAnswerLabel, answerArea, postButton, statusLabel);
         postAnswerBox.setPadding(new Insets(10));
-        postAnswerBox.setStyle("-fx-background-color: #f0f4ff; -fx-border-color: #ccddee; -fx-border-radius: 5; -fx-background-radius: 5;");
+        postAnswerBox.setStyle("-fx-background-color:rgb(175, 214, 253); -fx-border-color: #ccddee; -fx-border-radius: 15; -fx-background-radius: 15;");
         postAnswerBox.setMaxWidth(500);
 
         if (currentUser.isAdmin()) {
             Button removeQuestionButton = new Button("Remove Question");
-            removeQuestionButton.setStyle("-fx-background-color: #ffdddd;");
+            removeQuestionButton.setStyle("-fx-background-color: pink; -fx-text-fill: white; -fx-background-radius: 10;");
+            removeQuestionButton.setOnMouseEntered(e -> {
+                removeQuestionButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-background-radius: 10;");
+            });
+            removeQuestionButton.setOnMouseExited(e -> {
+                removeQuestionButton.setStyle("-fx-background-color: pink; -fx-text-fill: white; -fx-background-radius: 10;");
+            });
+
             removeQuestionButton.setOnAction(e -> {
                 questionService.removeQuestion(questionId);
                 answerService.removeAnswersByQuestionId(questionId);
-                mainApp.changePage(new QuestionsPage(mainApp, currentUser, questionService, answerService).getView());
+
+    // Clear layout and show deletion message
+                layout.getChildren().clear();
+
+                Label deletedLabel = new Label("The Question has been deleted.");
+                deletedLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+                Button okButton = new Button("OK");
+                okButton.setStyle("-fx-background-color: green; -fx-text-fill: white; -fx-background-radius: 10;");
+                okButton.setOnAction(okEvent -> {
+                    Stage stage = (Stage) layout.getScene().getWindow();
+                    stage.close();
+                    mainApp.changePage(new QuestionsPage(mainApp, currentUser, questionService, answerService).getView());
+                });
+
+                VBox deletedBox = new VBox(20, deletedLabel, okButton);
+                deletedBox.setAlignment(Pos.CENTER);
+                deletedBox.setPadding(new Insets(50));
+
+                layout.getChildren().add(deletedBox);
             });
             layout.getChildren().add(removeQuestionButton);
         }
+        
 
-        layout.getChildren().addAll(questionBox, new Label("Answers:"), answerListView, postAnswerBox);
+        Label ansLabel = new Label("Answer");
+        ansLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        ansLabel.setPrefSize(500, 15);
+        ansLabel.setAlignment(Pos.CENTER);
+        ansLabel.setTextFill(Color.WHITE);
+        ansLabel.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET, new CornerRadii(5), Insets.EMPTY)));
+        
+        VBox answerBox = new VBox(1, ansLabel,answerListView);
+        layout.getChildren().addAll(questionBox, answerBox, postAnswerBox);
 
         scrollPane = new ScrollPane(layout);
         scrollPane.setFitToWidth(true);
