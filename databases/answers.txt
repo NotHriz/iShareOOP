@@ -1,10 +1,4 @@
 444e2109-f3a2-4420-98ec-8786fadcf7b9
-Use interfaces when you want to define a contract that multiple classes can implement. Use abstract classes when you want to provide some shared code.
-charlie
-fd686ab9-0ab6-4488-b200-ee055c88c243
-2025-05-31 13:33
----
-444e2109-f3a2-4420-98ec-8786fadcf7b9
 Abstract classes can have method implementations, but interfaces can't (unless they’re default methods in Java 8+). That’s a key difference.
 charlie
 82f932a4-b0e8-4cca-849d-e25552069d49
