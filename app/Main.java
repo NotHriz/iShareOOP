@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.User;
-import services.QuestionService;
 import pages.QuestionsPage;
 import javafx.scene.Parent;
 import pages.LoginPage;
@@ -61,6 +60,11 @@ public class Main extends Application {
     public void setCurrentUser(User user) {
         this.currentUser = user;
     }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
 
     public static void main(String[] args) {
         launch(args);
