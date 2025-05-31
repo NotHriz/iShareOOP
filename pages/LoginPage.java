@@ -64,13 +64,8 @@ public class LoginPage {
             if (user != null) {
                 mainApp.setCurrentUser(user);
 
-                // Check if the user is an admin
-                if (user.isAdmin()) {
-                    // mainApp.showAdminPage();
-                } else {
-                    QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
-                    mainApp.changePage(questionsPage.getView());;
-                }
+                QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
+                mainApp.changePage(questionsPage.getView());;
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid username or password.");
                 alert.showAndWait();

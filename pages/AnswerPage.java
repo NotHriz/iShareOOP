@@ -95,6 +95,29 @@ public class AnswerPage {
             statusLabel.setText("Answer posted successfully.");
         });
 
+        // Create extra button to remove the whole question and all its answers for admins
+        if (currentUser.isAdmin()) {
+            Button removeButton = new Button("Remove Question");
+            removeButton.setOnAction(e -> {
+                questionService.removeQuestion(questionId);
+                answerService.removeAnswersByQuestionId(questionId);
+                mainApp.changePage(new QuestionsPage(mainApp, currentUser, questionService, answerService).getView());
+            });
+            layout.getChildren().add(removeButton);
+        }
+
+        // Remove specific answer when admin triple-clicks on it
+        answerListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 3 && currentUser.isAdmin()) {
+                String selectedAnswer = answerListView.getSelectionModel().getSelectedItem();
+                if (selectedAnswer != null) {
+                    String answerId = selectedAnswer.split(":")[0].trim(); // Assuming the format is "Answer by Author: Body"
+                    answerService.removeAnswerById(answerId);
+                    refreshAnswers();
+                }
+            }
+        });
+
         // Add components to the layout
         layout.getChildren().addAll(titleLabel, bodyArea, postButton, statusLabel, answerListView);
     }

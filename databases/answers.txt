@@ -1,35 +1,17 @@
-bcf7e64c-391e-4aa0-8a23-279e4eadb799
-dfgdfgdf
-charlie
-9602dad2-39ef-4c4b-9176-21a58b6e3e45
-2025-05-31 13:33
----
-bcf7e64c-391e-4aa0-8a23-279e4eadb799
-dfgfdgfd
-charlie
-762f59ec-3939-4a4c-9011-94e6d9e31e5f
-2025-05-31 13:33
----
 444e2109-f3a2-4420-98ec-8786fadcf7b9
-fdvfdv
+Use interfaces when you want to define a contract that multiple classes can implement. Use abstract classes when you want to provide some shared code.
 charlie
 fd686ab9-0ab6-4488-b200-ee055c88c243
 2025-05-31 13:33
 ---
 444e2109-f3a2-4420-98ec-8786fadcf7b9
-sdfgdfgs
+Abstract classes can have method implementations, but interfaces can't (unless they’re default methods in Java 8+). That’s a key difference.
 charlie
 82f932a4-b0e8-4cca-849d-e25552069d49
 2025-05-31 13:33
 ---
-bcf7e64c-391e-4aa0-8a23-279e4eadb799
-ddfgfdgdsdfsgds
-charlie
-383c67a4-5e9e-4b2b-88f2-7f316fb1a07b
-2025-05-31 13:33
----
 f44d1a22-60c4-425d-bd9d-c237bc513c0f
-fdgsdgsdgfdsr44
+A NullPointerException occurs when you try to use an object reference that hasn't been initialized. Always check for null before using objects.
 charlie
 c6d52dee-109f-474e-8a27-df238e69470e
 2025-05-31 13:33

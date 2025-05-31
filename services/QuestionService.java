@@ -81,6 +81,12 @@ public class QuestionService {
             e.printStackTrace();
         }
     } 
+
+    // Method to remove a question by ID
+    public void removeQuestion(String id) {
+        questions.removeIf(q -> q.getId().equals(id));
+        saveQuestions();  // Save after removing a question
+    }
     
    public Question getCurrentQuestion(String id) {
         for (Question q : questions) {

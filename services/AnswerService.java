@@ -83,4 +83,16 @@ public class AnswerService {
         }
         return questionAnswers;
     }
+
+    // Method to remove answers by question ID
+    public void removeAnswersByQuestionId(String questionId) {
+        answers.removeIf(a -> a.getQuestionId().equals(questionId));
+        saveAnswers();  // Save after removing answers
+    }
+
+    // Method to remove a specific answer by ID
+    public void removeAnswerById(String id) {
+        answers.removeIf(a -> a.getId().equals(id));
+        saveAnswers();  // Save after removing an answer
+    }
 }
