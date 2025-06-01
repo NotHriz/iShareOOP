@@ -137,7 +137,7 @@ public class QuestionsPage {
                 return;
             }
 
-            Question newQuestion = new Question(title, body, currentUser.getUsername(), null);
+            Question newQuestion = new Question(title, body, currentUser.getUsername());
             questionService.addQuestion(newQuestion);
             refreshQuestions();
 
