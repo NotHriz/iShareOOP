@@ -2,12 +2,12 @@ package app;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import model.User;
 import pages.QuestionsPage;
 import javafx.scene.Parent;
 import pages.LoginPage;
-import pages.QuestionsPage;
 import services.*;
 
 public class Main extends Application {
@@ -31,8 +31,9 @@ public class Main extends Application {
         LoginPage loginPage = new LoginPage(this, userService, questionService, answerService); 
         Parent root = loginPage.getView();
         Scene scene = new Scene(root, 800, 600);
-
+        Image icon = new Image("logo.jpg");
         // Set the scene and show the primary stage
+        primaryStage.getIcons().add(icon);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Question Page");
         primaryStage.show();
