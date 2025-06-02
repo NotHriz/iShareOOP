@@ -5,18 +5,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class AnswerService {
     public final List<Answer> answers = new ArrayList<>();
     private final String FILE_NAME = "databases/answers.txt";
 
+    // Method to add a new answer and save it to the file
     public void addAnswer(Answer a) {
         answers.add(a);
         saveAnswers();  // Save after adding a new answer
     }
 
-    // Method to save answers to a file
+    // Method to save all answers to a file
     public void saveAnswers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Answer a : answers) {
@@ -31,14 +30,14 @@ public class AnswerService {
                 writer.write(a.getFormattedTimeStamp());
                 writer.newLine();
                 writer.write("---");
-                writer.newLine();
+                writer.newLine();  // Separator for each answer
             }
         } catch (IOException e) {
             System.out.println("Error saving answers: " + e.getMessage());
         }
     }
 
-    // Method to load answers from a file
+    // Method to load answers from a file into memory
     public void loadAnswers() {
         answers.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
@@ -56,11 +55,13 @@ public class AnswerService {
                     break;
                 }
 
+                // Validate separator line
                 if (!separator.trim().equals("---")) {
                     System.out.println("Invalid answer data format in file.");
                     continue;
                 }
 
+                // Add the answer to the list
                 answers.add(new Answer(questionId.trim(), body.trim(), author.trim(), id.trim(), createdAtString.trim()));
             }
         } catch (IOException e) {
@@ -84,13 +85,13 @@ public class AnswerService {
         return questionAnswers;
     }
 
-    // Method to remove answers by question ID
+    // Method to remove all answers associated with a specific question
     public void removeAnswersByQuestionId(String questionId) {
         answers.removeIf(a -> a.getQuestionId().equals(questionId));
         saveAnswers();  // Save after removing answers
     }
 
-    // Method to remove a specific answer by ID
+    // Method to remove a specific answer by its unique ID
     public void removeAnswerById(String id) {
         answers.removeIf(a -> a.getId().equals(id));
         saveAnswers();  // Save after removing an answer
