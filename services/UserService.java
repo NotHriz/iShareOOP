@@ -1,12 +1,13 @@
 package services;
 
+import model.Question;
 import model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
 public class UserService {
-    private final List<User> users = new ArrayList<>();
+    private final static List<User> users = new ArrayList<>();
     private final String FILE_NAME = "databases/users.txt";
 
     public void addUser(String username, String password) {
@@ -35,11 +36,12 @@ public class UserService {
             while ((username = reader.readLine()) != null) {
                 String password = reader.readLine();
                 String isAdminStr = reader.readLine();
+                String statusStr = reader.readLine();
                 String createdAt = reader.readLine();
                 String separator = reader.readLine();
 
                 // Check if any of the lines are null (incomplete user block)
-                if (password == null || isAdminStr == null || createdAt == null || separator == null) {
+                if (password == null || isAdminStr == null || statusStr == null|| createdAt == null || separator == null) {
                     System.out.println("Incomplete user block. Skipping.");
                     break;
                 }
@@ -50,7 +52,9 @@ public class UserService {
                 }
 
                 boolean isAdmin = Boolean.parseBoolean(isAdminStr.trim());
-                users.add(new User(username.trim(), password.trim(), isAdmin, createdAt.trim()));
+                boolean status = Boolean.parseBoolean(statusStr.trim());
+                users.add(new User(username.trim(), password.trim(), isAdmin, status, createdAt.trim()));
+                
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,6 +81,15 @@ public class UserService {
         return false;
     }
 
-
+    public void userBan(String author) {
+        for (User user : users) {
+            if (user.getUsername().equals(author)) {
+                user.setStatus(false); // ban the user by setting status to false
+                saveUsers(); // write changes to users.txt
+                return;
+            }
+        }
+        System.out.println("User '" + author + "' not found.");
+    }
 
 }
