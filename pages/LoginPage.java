@@ -114,12 +114,15 @@ public class LoginPage {
             }
 
             User user = userService.authenticate(username, password);
-            if (user != null) {
+            if(user != null && user.getStatus() == true) {
                 loginAttempts = 0;
                 mainApp.setCurrentUser(user);
                 QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
                 mainApp.changePage(questionsPage.getView());
-            } else {
+            } else if(user.getStatus() == false){
+                showAlert(Alert.AlertType.ERROR, "You are Banned");
+                mainApp.changePage(new LoginPage(mainApp, userService, questionService, answerService).getView());
+            }else {
                 loginAttempts++;
                 showAlert(Alert.AlertType.ERROR, "Invalid username or password.");
                 if (loginAttempts >= 3) {
@@ -129,7 +132,7 @@ public class LoginPage {
         });
 
         registerButton.setOnAction(e -> {
-            RegisterPage registerPage = new RegisterPage(mainApp, userService);
+            RegisterPage registerPage = new RegisterPage(mainApp, userService, questionService, answerService);
             mainApp.changePage(registerPage.getView());
         });
 
@@ -163,3 +166,4 @@ public class LoginPage {
         return layout;
     }
 }
+
