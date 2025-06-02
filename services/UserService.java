@@ -61,6 +61,7 @@ public class UserService {
         }
     }
 
+
     // Authenticate a user
     public User authenticate(String username, String password) {
         for (User user : users) {
@@ -81,7 +82,7 @@ public class UserService {
         return false;
     }
 
-    public void userBan(String author) {
+    /*public void userBan(String author) {
         for (User user : users) {
             if (user.getUsername().equals(author)) {
                 user.setStatus(false); // ban the user by setting status to false
@@ -89,7 +90,6 @@ public class UserService {
                 return;
             }
         }
-        System.out.println("User '" + author + "' not found.");
-    }
+    } HELP THIS PART*/
 
 }
