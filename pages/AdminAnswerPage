@@ -178,6 +178,10 @@ public class AdminAnswerPage {
     // Clear layout and show deletion message
                 layout.getChildren().clear();
 
+                Answer selected = answerListView.getSelectionModel().getSelectedItem();
+                answerService.removeAnswerById(selected.getId());
+                refreshAnswers();
+
                 Label deletedLabel = new Label("The Answer has been deleted.");
                 deletedLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
