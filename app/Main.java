@@ -46,7 +46,7 @@ public class Main extends Application {
     }
 
     public void showMainPage() {
-        QuestionsPage questionsPage = new QuestionsPage(this, currentUser, questionService, answerService );
+        QuestionsPage questionsPage = new QuestionsPage(this, currentUser, questionService, answerService, userService);
         changePage(questionsPage.getView());
     }
 

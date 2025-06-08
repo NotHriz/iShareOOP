@@ -117,8 +117,9 @@ public class LoginPage {
             if(user != null && user.getStatus() == true) {
                 loginAttempts = 0;
                 mainApp.setCurrentUser(user);
-                QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService);
+                QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService, userService);
                 mainApp.changePage(questionsPage.getView());
+                System.out.println("User logged in: " + user.getUsername());
             } else if(user.getStatus() == false){
                 showAlert(Alert.AlertType.ERROR, "You are Banned");
                 mainApp.changePage(new LoginPage(mainApp, userService, questionService, answerService).getView());

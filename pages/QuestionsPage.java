@@ -12,6 +12,7 @@ import model.Question;
 import model.User;
 import services.AnswerService;
 import services.QuestionService;
+import services.UserService;
 import app.Main;
 
 public class QuestionsPage {
@@ -21,12 +22,14 @@ public class QuestionsPage {
     private final QuestionService questionService;
     private final ListView<Question> questionListView;
     private final AnswerService answerService;
+    private final UserService userService;
 
-    public QuestionsPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService) {
+    public QuestionsPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService, UserService userService) {
         this.mainApp = mainApp;
         this.currentUser = user;
         this.questionService = questionService;
         this.answerService = answerService;
+        this.userService = userService;
         this.questionListView = new ListView<>();
         buildUI();
         refreshQuestions();
@@ -164,7 +167,11 @@ public class QuestionsPage {
         questionListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Question selected = questionListView.getSelectionModel().getSelectedItem();
-                if (selected != null) {
+                // Open answer page for admin if user is admin
+                if (userService.isAdmin(currentUser) && selected != null) {
+                    AdminAnswerPage adminAnswerPage = new AdminAnswerPage(mainApp, currentUser, questionService, answerService, userService, selected.getId());
+                    mainApp.popUpNewWindow(adminAnswerPage.getView());
+                } else if (selected != null) { // Open normal answer page
                     AnswerPage answerPage = new AnswerPage(mainApp, currentUser, questionService, answerService, selected.getId());
                     mainApp.popUpNewWindow(answerPage.getView());
                 }
