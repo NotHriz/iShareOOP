@@ -210,8 +210,8 @@ public class AdminAnswerPage {
                 banUserButton.setStyle("-fx-background-color: pink; -fx-text-fill: white; -fx-background-radius: 10;");
             });
             banUserButton.setOnAction(e -> {
-                UserService userService = new UserService();
-                // userService.userBan(author); HELP THIS PART
+                // UserService userService = new UserService();
+                // TODO: userService.userBan(author); HELP THIS PART
                 questionService.removeQuestion(questionId);
                 answerService.removeAnswersByQuestionId(questionId);
 
