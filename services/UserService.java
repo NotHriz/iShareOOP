@@ -81,6 +81,11 @@ public class UserService {
         return false;
     }
 
+    // Check if a user is an admin
+    public boolean isAdmin(User user) {
+        return user != null && user.isAdmin();
+    }
+
     /*public void userBan(String author) {
         for (User user : users) {
             if (user.getUsername().equals(author)) {
