@@ -142,8 +142,3 @@ public class AnswerPage {
         return scrollPane;
     }
 }
-
-    public Parent getView() {
-        return scrollPane;
-    }
-}

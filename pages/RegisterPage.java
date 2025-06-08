@@ -20,16 +20,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import services.UserService;
+import services.QuestionService;
+import services.AnswerService;
 
 
 public class RegisterPage {
     private VBox layout;
     private final Main mainApp;
     private final UserService userService;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
 
-    public RegisterPage(Main mainApp, UserService userService) {
+    public RegisterPage(Main mainApp, UserService userService, QuestionService questionService, AnswerService answerService) {
         this.mainApp = mainApp;
         this.userService = userService;
+        this.questionService = questionService;
+        this.answerService = answerService;
         buildUI();
     }
 
@@ -86,7 +92,7 @@ public class RegisterPage {
 
             userService.addUser(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Registration successful!");
-            mainApp.changePage(new LoginPage(mainApp, userService, null, null).getView());
+            mainApp.changePage(new LoginPage(mainApp, userService, questionService, answerService).getView());
         });
 
         Button cancelReg = new Button("Cancel Register");
@@ -95,7 +101,7 @@ public class RegisterPage {
         cancelReg.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE,new CornerRadii(20), null)));
 
         cancelReg.setOnAction(e -> {
-            LoginPage loginPage = new LoginPage( mainApp, userService, null, null);
+            LoginPage loginPage = new LoginPage( mainApp, userService, questionService, answerService);
             mainApp.changePage(loginPage.getView());
         });
 

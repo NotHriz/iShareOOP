@@ -267,7 +267,3 @@ public class AdminAnswerPage {
     }
 }
 
-    public Parent getView() {
-        return scrollPane;
-    }
-}
