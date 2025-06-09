@@ -36,12 +36,11 @@ public class LoginPage {
         layout = new VBox(10);
         layout.setPadding(new Insets(40));
         layout.setAlignment(Pos.TOP_CENTER);
-        
+
         Image logo = new Image("logo.jpg");
         ImageView logoView = new ImageView(logo);
-        logoView.setFitWidth(200);  
+        logoView.setFitWidth(200);
         logoView.setFitHeight(200);
-       
 
         Label subtitleLabel = new Label("your answer is here");
         subtitleLabel.setTextFill(Color.GRAY);
@@ -92,13 +91,13 @@ public class LoginPage {
 
         Button loginButton = new Button("Login");
         loginButton.setPrefWidth(100);
-        loginButton.setTextFill(Color.WHITE);  // White text
-        loginButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE,new CornerRadii(20), null)));
+        loginButton.setTextFill(Color.WHITE);
+        loginButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE, new CornerRadii(20), null)));
 
         Button registerButton = new Button("Register");
         registerButton.setPrefWidth(100);
-        registerButton.setTextFill(Color.WHITE);  
-        registerButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE,new CornerRadii(20), null)));
+        registerButton.setTextFill(Color.WHITE);
+        registerButton.setBackground(new Background(new BackgroundFill(Color.DEEPSKYBLUE, new CornerRadii(20), null)));
 
         Label forgotPasswordLabel = new Label("Forgot password?");
         forgotPasswordLabel.setStyle("-fx-text-fill: blue; -fx-border-color: lightgray; -fx-padding: 5;");
@@ -114,16 +113,18 @@ public class LoginPage {
             }
 
             User user = userService.authenticate(username, password);
-            if(user != null && user.getStatus() == true) {
-                loginAttempts = 0;
-                mainApp.setCurrentUser(user);
-                QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService, userService);
-                mainApp.changePage(questionsPage.getView());
-                System.out.println("User logged in: " + user.getUsername());
-            } else if(user.getStatus() == false){
-                showAlert(Alert.AlertType.ERROR, "You are Banned");
-                mainApp.changePage(new LoginPage(mainApp, userService, questionService, answerService).getView());
-            }else {
+
+            if (user != null) { // Authentication successful
+                if (user.getStatus()) { // Check if the user is not banned
+                    loginAttempts = 0;
+                    mainApp.setCurrentUser(user);
+                    QuestionsPage questionsPage = new QuestionsPage(mainApp, user, questionService, answerService, userService);
+                    mainApp.changePage(questionsPage.getView());
+                    System.out.println("User logged in: " + user.getUsername());
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "You are Banned");
+                }
+            } else { // Authentication failed
                 loginAttempts++;
                 showAlert(Alert.AlertType.ERROR, "Invalid username or password.");
                 if (loginAttempts >= 3) {
@@ -153,8 +154,6 @@ public class LoginPage {
             forgotPasswordLabel
         );
 
-        
-
         layout.getChildren().addAll(logoView, subtitleLabel, formBox, footer);
         layout.setAlignment(Pos.CENTER);
     }
@@ -167,4 +166,3 @@ public class LoginPage {
         return layout;
     }
 }
-
