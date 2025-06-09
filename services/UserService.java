@@ -86,14 +86,26 @@ public class UserService {
         return user != null && user.isAdmin();
     }
 
-    /*public void userBan(String author) {
+    public boolean isAdmin(User user) {
+        return user != null && user.isAdmin();
+    }
+
+    public void banUser(String username) {
+        loadUsers(); // Ensure latest data is loaded
+        boolean found = false;
         for (User user : users) {
-            if (user.getUsername().equals(author)) {
-                user.setStatus(false); // ban the user by setting status to false
-                saveUsers(); // write changes to users.txt
-                return;
+            if (user.getUsername().equals(username)) {
+                user.setStatus(false);
+                found = true;
+                break;
             }
         }
-    } HELP THIS PART*/
+        if (found) {
+            saveUsers(); // Save changes only if user was found and updated
+            System.out.println("User '" + username + "' has been banned.");
+        } else {
+            System.out.println("User '" + username + "' not found.");
+        }
+    }
 
 }
