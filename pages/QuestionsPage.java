@@ -167,9 +167,10 @@ public class QuestionsPage {
         questionListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Question selected = questionListView.getSelectionModel().getSelectedItem();
+                Question username = questionListView.getSelectionModel().getSelectedItem();
                 // Open answer page for admin if user is admin
                 if (userService.isAdmin(currentUser) && selected != null) {
-                    AdminAnswerPage adminAnswerPage = new AdminAnswerPage(mainApp, currentUser, questionService, answerService, userService, selected.getId());
+                    AdminAnswerPage adminAnswerPage = new AdminAnswerPage(mainApp, currentUser, questionService, answerService, userService, selected.getId(), username.getAuthor());
                     mainApp.popUpNewWindow(adminAnswerPage.getView());
                 } else if (selected != null) { // Open normal answer page
                     AnswerPage answerPage = new AnswerPage(mainApp, currentUser, questionService, answerService, selected.getId());

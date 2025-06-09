@@ -22,16 +22,18 @@ public class AdminAnswerPage {
     private final UserService userService;
     private final ListView<Answer> answerListView;
     private final String questionId;
+    private final String username;
     private ScrollPane scrollPane;
 
 
-    public AdminAnswerPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService, UserService userService, String questionId) {
+    public AdminAnswerPage(Main mainApp, User user, QuestionService questionService, AnswerService answerService, UserService userService, String questionId, String username) {
         this.mainApp = mainApp;
         this.currentUser = user;
         this.questionService = questionService;
         this.answerService = answerService;
         this.userService = userService;
         this.questionId = questionId;
+        this.username = username;
         this.answerListView = new ListView<>();
         buildUI();
         refreshAnswers();
@@ -192,7 +194,7 @@ public class AdminAnswerPage {
                 okButton.setOnAction(okEvent -> {
                     Stage stage = (Stage) layout.getScene().getWindow();
                     stage.close();
-                    mainApp.popUpNewWindow(new AdminAnswerPage(mainApp, currentUser, questionService, answerService, userService, questionId).getView());
+                    mainApp.popUpNewWindow(new AdminAnswerPage(mainApp, currentUser, questionService, answerService, userService, questionId, username).getView());
                 });
 
                 VBox deletedBox = new VBox(20, deletedLabel, okButton);
@@ -216,6 +218,8 @@ public class AdminAnswerPage {
                 // TODO: userService.userBan(author); HELP THIS PART
                 questionService.removeQuestion(questionId);
                 answerService.removeAnswersByQuestionId(questionId);
+                UserService userService = new UserService();
+                userService.banUser(username);
 
     // Clear layout and show deletion message
                 layout.getChildren().clear();
