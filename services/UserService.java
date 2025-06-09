@@ -85,7 +85,12 @@ public class UserService {
     public boolean isAdmin(User user) {
         return user != null && user.isAdmin();
     }
-    
+
+    // Check if a user is banned
+    public boolean isBanned(User user) {
+        return user != null && !user.getStatus();
+    }
+
     public void banUser(String username) {
         loadUsers(); // Ensure latest data is loaded
         boolean found = false;
