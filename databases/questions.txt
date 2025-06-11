@@ -1,0 +1,24 @@
+What is polymorphism in OOP?
+Can someone explain what polymorphism is and how it's used in Java?
+charlie
+bcf7e64c-391e-4aa0-8a23-279e4eadb799
+2025-05-31 04:24
+---
+What is the difference between an interface and an abstract class?
+I'm confused when to use an interface and when to use an abstract class in Java.
+charlie
+444e2109-f3a2-4420-98ec-8786fadcf7b9
+2025-05-31 04:24
+---
+What is a NullPointerException and how can I avoid it?
+I keep getting NullPointerException errors. What causes them and how can I handle or prevent them?
+charlie
+f44d1a22-60c4-425d-bd9d-c237bc513c0f
+2025-05-31 04:24
+---
+How to print helloWorld in python
+I dont know i wrote print(helloWorld)
+bob
+51a1950c-6af0-44fa-971e-a0e41a2ebc07
+2025-05-31 15:51
+---
