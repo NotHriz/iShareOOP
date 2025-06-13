@@ -8,7 +8,7 @@ import java.util.List;
 
 public class QuestionService {
     private final List<Question> questions = new ArrayList<>();
-    private final String FILE_NAME = "databases/questions.txt";
+    private static final String FILE_NAME = "databases/questions.txt";
 
     public void addQuestion(Question q) {
         questions.add(q);
@@ -20,7 +20,7 @@ public class QuestionService {
         return questions;
     }
 
-    public void saveQuestions() {
+    private void saveQuestions() {
         try {
             File file = new File(FILE_NAME);
             File parent = file.getParentFile();

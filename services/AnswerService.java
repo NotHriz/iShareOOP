@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AnswerService {
     public final List<Answer> answers = new ArrayList<>();
-    private final String FILE_NAME = "databases/answers.txt";
+    private static final String FILE_NAME = "databases/answers.txt";
 
     // Method to add a new answer and save it to the file
     public void addAnswer(Answer a) {
@@ -16,7 +16,7 @@ public class AnswerService {
     }
 
     // Method to save all answers to a file
-    public void saveAnswers() {
+    private void saveAnswers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Answer a : answers) {
                 writer.write(a.getQuestionId());

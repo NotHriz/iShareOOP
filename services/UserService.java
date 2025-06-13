@@ -7,7 +7,7 @@ import java.io.*;
 
 public class UserService {
     private final static List<User> users = new ArrayList<>();
-    private final String FILE_NAME = "databases/users.txt";
+    private static final String FILE_NAME = "databases/users.txt";
 
     public void addUser(String username, String password) {
         User newUser = new User(username, password);
@@ -16,7 +16,7 @@ public class UserService {
     }
 
     // Save the user to the file
-    public void saveUsers() {
+    private void saveUsers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (User user : users) {
                 writer.write(user.toFileString());
